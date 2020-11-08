@@ -56,6 +56,7 @@ module BCDice
         @prefixes ||= []
         @prefixes.freeze
         pattarns = CommonCommand::COMMANDS.map { |c| c::PREFIX_PATTERN.source } + @prefixes
+        pattarns << CommonCommand::Repeat::PREFIX_PATTERN.source
 
         @command_pattern = /^S?(#{pattarns.join("|")})/i.freeze
       end
@@ -164,10 +165,11 @@ module BCDice
     # コマンドを評価する
     # @return [Result, nil] コマンド実行結果。コマンドが実行できなかった場合はnilを返す
     def eval
-      command = BCDice::Preprocessor.process(@raw_input, self)
+      processed = BCDice::Preprocessor.process(@raw_input, self)
+      command = processed.before_whitespace
       upcased_command = command.upcase
 
-      result = dice_command(command) || eval_common_command(upcased_command)
+      result = dice_command(command) || eval_common_command(upcased_command) || CommonCommand::Repeat.eval(processed.full_text, self, @randomizer)
       return nil unless result
 
       result.rands = @randomizer.rand_results

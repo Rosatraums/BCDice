@@ -8,10 +8,12 @@ module BCDice
   #   ) #=> "1d6+4D6+7"
   class Preprocessor
     # @param (see #initialize)
-    # @return [String]
+    # @return [Processed]
     def self.process(text, game_system)
       Preprocessor.new(text, game_system).process()
     end
+
+    Processed = Struct.new(:full_text, :before_whitespace)
 
     # @param text [String]
     # @param game_system [Base]
@@ -20,23 +22,25 @@ module BCDice
       @game_system = game_system
     end
 
-    # @return [String]
+    # @return [Processed]
     def process
-      trim_after_whitespace()
       replace_parentheses()
 
       @text = @game_system.change_text(@text)
 
       replace_implicit_d6()
 
-      return @text
+      Processed.new(
+        @text,
+        trim_after_whitespace()
+      )
     end
 
     private
 
     # 空白より前だけを取る
     def trim_after_whitespace()
-      @text = @text.strip.split(/\s/, 2).first
+      @text.strip.split(/\s/, 2).first
     end
 
     # カッコ書きの数式を事前計算する

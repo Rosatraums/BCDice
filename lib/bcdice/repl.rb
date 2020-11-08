@@ -99,7 +99,7 @@ module BCDice
       if block
         instance_exec(*args, &block)
       else
-        eval_game_system(command)
+        eval_game_system(input)
       end
     end
 
@@ -146,7 +146,7 @@ module BCDice
     def eval_game_system(command)
       gs = @game_system.new(command)
       gs.enable_debug if @debug
-      puts gs.eval().text
+      puts gs.eval()&.text
     rescue StandardError => e
       puts e
       puts e.backtrace
