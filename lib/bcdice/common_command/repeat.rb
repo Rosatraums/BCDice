@@ -1,7 +1,7 @@
 module BCDice
   module CommonCommand
     class Repeat
-      PREFIX_PATTERN = /^(rep|repeat|x)\d+/.freeze
+      PREFIX_PATTERN = /(rep|repeat|x)\d+/.freeze
 
       COMMAND_REGEXP = /\A(?:rep|repeat|x)(\d+)(?: |$)/i.freeze
       REPEAT_LIMIT = 100
